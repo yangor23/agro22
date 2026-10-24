@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f4e3d">
+<title>Agroservicios El 22</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: una columna tipo app, resumen arriba y una tarjeta por pregunta; en pantallas anchas, dos columnas. */
+:root {
+  --bg: #f3f5f1;
+  --surface: #ffffff;
+  --ink: #18241e;
+  --muted: #5b6a62;
+  --line: #dde3dc;
+  --brand: #1f4e3d;
+  --brand-soft: #e3ede7;
+  --wheat: #c9922e;
+  --in: #2a78d6;
+  --out: #eb6834;
+  --good: #2e7d32; --good-bg: #e2f0d9;
+  --bad: #c00000;  --bad-bg: #f8d7da;
+  --warn: #8a5a00; --warn-bg: #fff0c7;
+  --violet: #6a3fb0; --violet-bg: #efe6fa;
+  --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100; --c5: #e87ba4; --c6: #008300; --c7: #6250d6; --c8: #e34948;
+  --font: "Archivo", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1613; --surface: #17211c; --ink: #e9efea; --muted: #9db0a5; --line: #2a3832;
+    --brand: #8fd1b0; --brand-soft: #1e3129; --wheat: #e2b35a;
+    --in: #3987e5; --out: #d95926;
+    --good: #7fd08a; --good-bg: #1d3322; --bad: #ff8a8a; --bad-bg: #3a1d20;
+    --warn: #f2c766; --warn-bg: #3a2f14; --violet: #c3a6f2; --violet-bg: #2c2340;
+    --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #2e9e3a; --c7: #9085e9; --c8: #e66767;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1613; --surface: #17211c; --ink: #e9efea; --muted: #9db0a5; --line: #2a3832;
+  --brand: #8fd1b0; --brand-soft: #1e3129; --wheat: #e2b35a;
+  --in: #3987e5; --out: #d95926;
+  --good: #7fd08a; --good-bg: #1d3322; --bad: #ff8a8a; --bad-bg: #3a1d20;
+  --warn: #f2c766; --warn-bg: #3a2f14; --violet: #c3a6f2; --violet-bg: #2c2340;
+  --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500; --c5: #d55181; --c6: #2e9e3a; --c7: #9085e9; --c8: #e66767;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.45; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 16px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Encabezado */
+.top { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; justify-content: space-between; }
+.brand { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.mark { width: 44px; height: 44px; border-radius: 12px; background: var(--brand); flex: none; display: grid; place-items: center; }
+.mark svg { width: 28px; height: 28px; }
+h1 { margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
+.sub { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.actions { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.btn { appearance: none; border: 0; border-radius: 12px; padding: 12px 18px; font: 700 1rem var(--font);
+  background: var(--brand); color: var(--surface); cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.btn:hover { filter: brightness(1.08); }
+.btn:focus-visible { outline: 3px solid var(--wheat); outline-offset: 2px; }
+.btn svg { width: 20px; height: 20px; }
+.stamp { font-size: 0.82rem; color: var(--muted); text-align: right; }
+
+/* Mensajes */
+.note { border-radius: 12px; padding: 12px 14px; font-size: 0.95rem; }
+.note.ok { background: var(--good-bg); color: var(--good); }
+.note.err { background: var(--bad-bg); color: var(--bad); }
+.note.info { background: var(--brand-soft); color: var(--ink); }
+
+/* Resumen */
+.hero { background: var(--brand); color: #fff; border-radius: 18px; padding: 20px; display: grid; gap: 4px; }
+:root[data-theme="dark"] .hero { color: #0f1613; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero { color: #0f1613; } }
+.hero .label { font-size: 0.95rem; font-weight: 600; opacity: 0.9; }
+.hero .big { font-size: clamp(2.4rem, 9vw, 3.4rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+.hero .line { font-size: 1rem; opacity: 0.95; }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 760px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; min-width: 0; }
+.tile .label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.tile .value { font-size: 1.45rem; font-weight: 800; margin-top: 2px; overflow-wrap: anywhere; }
+.tile .hint { font-size: 0.8rem; color: var(--muted); }
+
+/* Tarjetas */
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; min-width: 0; display: grid; gap: 10px; align-content: start; }
+.card h2 { margin: 0; font-size: 1.2rem; font-weight: 800; text-wrap: balance; }
+.card .how { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.wide { grid-column: 1 / -1; }
+.empty { color: var(--muted); font-size: 0.95rem; padding: 18px; text-align: center; border: 1px dashed var(--line); border-radius: 12px; }
+
+/* Avisos */
+.alerts { display: grid; gap: 8px; }
+.alert { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--warn-bg); color: var(--warn); font-weight: 600; }
+.alert small { font-weight: 500; opacity: 0.9; }
+.allgood { display: flex; gap: 10px; align-items: center; padding: 12px; border-radius: 10px; background: var(--good-bg); color: var(--good); font-weight: 700; }
+.allgood svg { width: 22px; height: 22px; flex: none; }
+
+/* Leyenda y chips */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.9rem; color: var(--muted); }
+.key { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.chip { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }
+.chip.good { background: var(--good-bg); color: var(--good); }
+.chip.bad { background: var(--bad-bg); color: var(--bad); }
+.chip.warn { background: var(--violet-bg); color: var(--violet); }
+.chip.muted { background: var(--brand-soft); color: var(--muted); }
+.years { display: flex; gap: 6px; flex-wrap: wrap; }
+.years button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 4px 12px; font: 600 0.9rem var(--font); cursor: pointer; }
+.years button[aria-pressed="true"] { background: var(--brand); color: var(--surface); border-color: var(--brand); }
+
+/* Gráficos */
+svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg.chart text { fill: var(--muted); font-family: var(--font); }
+svg.chart .val { fill: var(--ink); font-weight: 700; }
+.donut-row { display: grid; grid-template-columns: minmax(120px, 160px) minmax(0, 1fr); gap: 16px; align-items: center; }
+@media (max-width: 460px) { .donut-row { grid-template-columns: minmax(0, 1fr); justify-items: center; } .donut-row .list { width: 100%; } }
+.list { display: grid; gap: 8px; }
+.li { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 8px; align-items: baseline; font-size: 0.95rem; }
+.li .sw { transform: translateY(1px); }
+.li .amt { font-weight: 700; text-align: right; white-space: nowrap; }
+.li .pct { color: var(--muted); font-weight: 600; margin-left: 6px; white-space: nowrap; }
+
+/* Máquinas y clientes */
+.rows { display: grid; gap: 14px; }
+.row { display: grid; gap: 6px; }
+.row-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row-head b { font-size: 1.02rem; }
+.bar { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 0.88rem; }
+.bar .track { height: 14px; background: var(--brand-soft); border-radius: 7px; overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 7px; }
+.bar .amt { font-weight: 700; white-space: nowrap; min-width: 86px; text-align: right; }
+.row .foot { font-size: 0.85rem; color: var(--muted); }
+.rest { font-size: 0.85rem; color: var(--muted); }
+
+/* Alquiler */
+.progress { height: 26px; border-radius: 13px; background: var(--brand-soft); overflow: hidden; display: flex; }
+.progress .done { background: var(--wheat); height: 100%; }
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.split div { display: grid; }
+.split .label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.split .value { font-size: 1.25rem; font-weight: 800; }
+
+footer { color: var(--muted); font-size: 0.85rem; text-align: center; }
+@media (prefers-reduced-motion: no-preference) { .fill, .done { transition: width .5s ease; } }
+</style>
+<style>html,body{margin:0}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 29V9"/><path d="M16 14c-3-1-5-3.5-5-7 3 .5 5 3 5 7z"/><path d="M16 14c3-1 5-3.5 5-7-3 .5-5 3-5 7z"/>
+          <path d="M16 21c-3-1-5-3.5-5-7 3 .5 5 3 5 7z"/><path d="M16 21c3-1 5-3.5 5-7-3 .5-5 3-5 7z"/>
+        </svg>
+      </div>
+      <div style="min-width:0">
+        <h1>Agroservicios El 22</h1>
+        <p class="sub">Cómo viene la empresa, en números simples</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="upload-btn" type="button" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/></svg>
+        Actualizar con el Excel
+      </button>
+      <input id="file" type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
+      <div class="stamp" id="stamp">Cargando…</div>
+    </div>
+  </header>
+
+  <div id="msg" class="note info" hidden></div>
+
+  <main id="content" style="display:grid; gap:16px"></main>
+
+  <footer>Montos en dólares y sin IVA, salvo donde dice pesos. Los números salen del Excel de cuentas.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* Lee el Excel de cuentas y arma el resumen que muestra la app.
+   Calcula todo a partir de los datos cargados (no de los resultados guardados en el archivo). */
+function summarizeWorkbook(wb, XLSX, fileName) {
+  const norm = (s) => String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  const num = (v) => {
+    if (v == null || v === "") return null;
+    if (typeof v === "number") return isFinite(v) ? v : null;
+    const t = String(v).replace(/[^\d,.\-]/g, "");
+    if (!t) return null;
+    const n = Number(t.includes(",") && !t.includes(".") ? t.replace(",", ".") : t.replace(/,/g, ""));
+    return isFinite(n) ? n : null;
+  };
+  const asDate = (v) => {
+    if (v instanceof Date && !isNaN(v)) return v;
+    if (typeof v === "number" && v > 20000 && v < 80000) { const d = XLSX.SSF.parse_date_code(v); return new Date(d.y, d.m - 1, d.d); }
+    if (typeof v === "string") {
+      const m = v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+      if (m) return new Date(+(m[3].length === 2 ? "20" + m[3] : m[3]), +m[2] - 1, +m[1]);
+    }
+    return null;
+  };
+  const sheet = (name) => {
+    const key = Object.keys(wb.Sheets).find((k) => norm(k) === norm(name));
+    return key ? XLSX.utils.sheet_to_json(wb.Sheets[key], { header: 1, raw: true, defval: null, blankrows: true }) : null;
+  };
+  // Busca la fila de encabezados (la que empieza con `first`) y mapea columnas por palabras clave.
+  const table = (rows, first, wanted) => {
+    if (!rows) return { list: [], ok: false };
+    let h = -1;
+    for (let i = 0; i < Math.min(rows.length, 15); i++) if (rows[i] && norm(rows[i][0]) === first) { h = i; break; }
+    if (h < 0) return { list: [], ok: false };
+    const hdr = rows[h].map(norm);
+    const idx = {};
+    for (const [k, keys] of Object.entries(wanted)) idx[k] = hdr.findIndex((c) => keys.some((w) => c.startsWith(w)));
+    const list = [];
+    for (let i = h + 1; i < rows.length; i++) {
+      const r = rows[i] || [];
+      const o = {};
+      for (const [k, j] of Object.entries(idx)) o[k] = j >= 0 ? r[j] : null;
+      list.push(o);
+    }
+    return { list, ok: true };
+  };
+
+  // ---------- Listas y datos fijos ----------
+  const lsRows = sheet("Listas") || [];
+  const listCol = (title) => {
+    for (let i = 0; i < Math.min(lsRows.length, 10); i++) {
+      const r = lsRows[i] || [];
+      const j = r.findIndex((c) => norm(c) === norm(title));
+      if (j >= 0) {
+        const out = [];
+        for (let k = i + 1; k < lsRows.length; k++) { const v = (lsRows[k] || [])[j]; if (v != null && String(v).trim() !== "") out.push(String(v).trim()); }
+        return out;
+      }
+    }
+    return [];
+  };
+  const param = (startsWith, fallback) => {
+    for (const r of lsRows) {
+      if (!r) continue;
+      for (let j = 0; j < r.length - 1; j++) if (norm(r[j]).startsWith(startsWith)) { const v = num(r[j + 1]); if (v != null) return v; }
+    }
+    return fallback;
+  };
+  const P = { iva: param("iva", 0.105), op: param("operario", 0.08), as: param("asistente", 0.035), en: param("encargado", 0.10) };
+  const maquinasLista = listCol("Máquinas");
+  const clientesLista = listCol("Clientes");
+  const laboresLista = listCol("Labores");
+  const catsLista = listCol("Categorías gasto");
+
+  // ---------- Ingresos ----------
+  const ing = table(sheet("Ingresos"), "fecha", {
+    fecha: ["fecha"], cliente: ["cliente"], maquina: ["maquina"], labor: ["labor"], ha: ["hectareas"],
+    tarifa: ["tarifa"], dolar: ["dolar del dia"], cobrado: ["ya cobrado", "cobrado"],
+  }).list.filter((r) => num(r.ha) != null || num(r.tarifa) != null || (r.cliente && String(r.cliente).trim()));
+  const trabajos = ing.map((r) => {
+    const ha = num(r.ha), tarifa = num(r.tarifa);
+    const neto = ha != null && tarifa != null ? ha * tarifa : 0;
+    const total = neto * (1 + P.iva);
+    const cobrado = num(r.cobrado) || 0;
+    return {
+      fecha: asDate(r.fecha), cliente: r.cliente ? String(r.cliente).trim() : "", maquina: r.maquina ? String(r.maquina).trim() : "",
+      labor: r.labor ? String(r.labor).trim() : "", ha: ha || 0, tieneHa: ha != null, tienePrecio: tarifa != null,
+      tieneDolar: num(r.dolar) != null, neto, iva: neto * P.iva, total, cobrado, saldo: neto ? total - cobrado : 0,
+      op: neto * P.op, as: neto * P.as, en: neto * P.en,
+    };
+  });
+
+  // ---------- Gastos ----------
+  const gas = table(sheet("Gastos"), "fecha", {
+    fecha: ["fecha"], destino: ["maquina o general", "maquina"], categoria: ["categoria"], litros: ["litros"],
+    pesos: ["monto en pesos"], dolar: ["dolar del dia"],
+  }).list.filter((r) => num(r.pesos) != null);
+  const gastos = gas.map((r) => {
+    const pesos = num(r.pesos), dolar = num(r.dolar);
+    return {
+      fecha: asDate(r.fecha), destino: r.destino ? String(r.destino).trim() : "", categoria: r.categoria ? String(r.categoria).trim() : "Sin categoría",
+      litros: num(r.litros) || 0, pesos, tieneDolar: !!dolar, usd: dolar ? pesos / dolar : 0,
+    };
+  });
+
+  // ---------- Cheques ----------
+  const chq = table(sheet("Cheques"), "tipo", {
+    tipo: ["tipo"], fechaPago: ["fecha de pago"], monto: ["monto"], estado: ["estado"],
+  }).list.filter((r) => num(r.monto) != null);
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const cheques = chq.map((r) => ({ tipo: norm(r.tipo), fecha: asDate(r.fechaPago), monto: num(r.monto), estado: norm(r.estado) }));
+
+  // ---------- Alquiler ----------
+  const alRows = sheet("Alquiler") || [];
+  const alVal = (label, fallbackRow) => {
+    for (const r of alRows) if (r && norm(r[0]).startsWith(label)) return num(r[1]);
+    return fallbackRow != null && alRows[fallbackRow] ? num(alRows[fallbackRow][1]) : null;
+  };
+  const haAlq = alVal("hectareas alquiladas", 4) || 0;
+  const tnHa = alVal("toneladas de soja por hectarea", 5) || 0;
+  const precioSoja = alVal("precio de la tonelada", 10);
+  let retirosKg = 0, hdrAl = -1;
+  for (let i = 0; i < alRows.length; i++) { const r = alRows[i]; if (r && norm(r[0]) === "fecha" && norm(r[2]).includes("kg")) { hdrAl = i; break; } }
+  if (hdrAl >= 0) for (let i = hdrAl + 1; i < alRows.length; i++) {
+    const r = alRows[i] || []; const kg = num(r[2]), m = num(r[3]), p = num(r[4]);
+    if (kg != null) retirosKg += kg; else if (m != null && p) retirosKg += (m / p) * 1000;
+  }
+  const cobradaCelda = alVal("soja ya cobrada", 14);
+  const sojaCobrada = retirosKg || cobradaCelda || 0;
+  const sojaTotal = haAlq * tnHa * 1000;
+  const sojaFalta = sojaTotal - sojaCobrada;
+
+  // ---------- Totales ----------
+  const sum = (a, f) => a.reduce((s, x) => s + (f(x) || 0), 0);
+  const facturado = sum(trabajos, (t) => t.neto);
+  const personal = sum(trabajos, (t) => t.op + t.as + t.en);
+  const generales = sum(gastos.filter((g) => norm(g.destino) === "general"), (g) => g.usd);
+  const gastosMaq = sum(gastos, (g) => g.usd) - generales;
+  const ganancia = facturado - gastosMaq - personal - generales;
+
+  // Máquinas: las de Listas más cualquier otra que aparezca cargada
+  const maqSet = [...maquinasLista];
+  for (const x of [...trabajos.map((t) => t.maquina), ...gastos.map((g) => g.destino)])
+    if (x && norm(x) !== "general" && !maqSet.some((m) => norm(m) === norm(x))) maqSet.push(x);
+  const porMaquina = maqSet.map((m) => {
+    const tt = trabajos.filter((t) => norm(t.maquina) === norm(m));
+    const gg = gastos.filter((g) => norm(g.destino) === norm(m));
+    const entro = sum(tt, (t) => t.neto);
+    const gastoMaq = sum(gg, (g) => g.usd), pers = sum(tt, (t) => t.op + t.as + t.en);
+    const ha = sum(tt.filter((t) => t.tienePrecio), (t) => t.ha);
+    const litros = sum(gg.filter((g) => norm(g.categoria) === "combustible"), (g) => g.litros);
+    return { nombre: m, ha, entro, gastoMaq, personal: pers, salio: gastoMaq + pers, ganancia: entro - gastoMaq - pers, litros };
+  });
+
+  const grupo = (items, key, val, orden) => {
+    const map = new Map();
+    for (const o of orden || []) map.set(o, 0);
+    for (const it of items) { const k = it[key] || "Sin dato"; map.set(k, (map.get(k) || 0) + val(it)); }
+    return [...map.entries()].map(([nombre, valor]) => ({ nombre, valor })).filter((x) => x.valor > 0.005).sort((a, b) => b.valor - a.valor);
+  };
+  const porLabor = grupo(trabajos, "labor", (t) => t.neto, laboresLista);
+  const porGasto = grupo(gastos.filter((g) => g.usd), "categoria", (g) => g.usd, catsLista)
+    .concat([
+      { nombre: "Operarios (" + Math.round(P.op * 1000) / 10 + "%)", valor: sum(trabajos, (t) => t.op) },
+      { nombre: "Asistentes (" + Math.round(P.as * 1000) / 10 + "%)", valor: sum(trabajos, (t) => t.as) },
+      { nombre: "Encargado de campo (" + Math.round(P.en * 1000) / 10 + "%)", valor: sum(trabajos, (t) => t.en) },
+    ].filter((x) => x.valor > 0.005))
+    .sort((a, b) => b.valor - a.valor);
+
+  const cliSet = [...clientesLista];
+  for (const t of trabajos) if (t.cliente && !cliSet.some((c) => norm(c) === norm(t.cliente))) cliSet.push(t.cliente);
+  const porCliente = cliSet.map((c) => {
+    const tt = trabajos.filter((t) => norm(t.cliente) === norm(c));
+    const fact = sum(tt, (t) => t.neto), debe = sum(tt, (t) => t.saldo), ha = sum(tt, (t) => t.ha);
+    const sinPrecio = tt.some((t) => t.tieneHa && !t.tienePrecio);
+    const estado = sinPrecio ? "Falta precio" : debe > 0.005 ? "Debe" : fact > 0 ? "Al día" : "Sin trabajos";
+    return { nombre: c, ha, facturado: fact, debe, estado };
+  }).filter((c) => c.estado !== "Sin trabajos").sort((a, b) => b.facturado - a.facturado);
+
+  // Mes a mes por año (ingresos y gastos en US$, cheques en pesos)
+  const porMes = {}, chequesMes = {};
+  const slot = (obj, y, keys) => (obj[y] = obj[y] || Object.fromEntries(keys.map((k) => [k, Array(12).fill(0)])));
+  for (const t of trabajos) if (t.fecha && t.neto) { slot(porMes, t.fecha.getFullYear(), ["entro", "salio"]).entro[t.fecha.getMonth()] += t.neto; }
+  for (const t of trabajos) if (t.fecha && t.neto) { slot(porMes, t.fecha.getFullYear(), ["entro", "salio"]).salio[t.fecha.getMonth()] += t.op + t.as + t.en; }
+  for (const g of gastos) if (g.fecha && g.usd) { slot(porMes, g.fecha.getFullYear(), ["entro", "salio"]).salio[g.fecha.getMonth()] += g.usd; }
+  for (const c of cheques) if (c.fecha) {
+    const s = slot(chequesMes, c.fecha.getFullYear(), ["cobrar", "pagar"]);
+    if (c.tipo === "recibido" && c.estado !== "endosado" && c.estado !== "rechazado") s.cobrar[c.fecha.getMonth()] += c.monto;
+    if (c.tipo === "emitido" && c.estado !== "anulado") s.pagar[c.fecha.getMonth()] += c.monto;
+  }
+
+  const diasA = (d) => (d ? Math.round((d - hoy) / 86400000) : null);
+  const vencen7 = cheques.filter((c) => {
+    if (["acreditado", "debitado", "endosado", "anulado", "rechazado"].includes(c.estado)) return false;
+    const d = diasA(c.fecha); return d != null && d >= 0 && d <= 7;
+  }).length;
+  const cargados = trabajos.filter((t) => t.tieneHa);
+  const avisos = [
+    { texto: "Trabajos sin fecha", hoja: "Ingresos", n: cargados.filter((t) => !t.fecha).length },
+    { texto: "Trabajos sin máquina", hoja: "Ingresos", n: cargados.filter((t) => !t.maquina).length },
+    { texto: "Trabajos sin precio", hoja: "Ingresos", n: cargados.filter((t) => !t.tienePrecio).length },
+    { texto: "Trabajos sin dólar del día", hoja: "Ingresos", n: cargados.filter((t) => !t.tieneDolar).length },
+    { texto: "Gastos sin dólar del día", hoja: "Gastos", n: gastos.filter((g) => !g.tieneDolar).length },
+    { texto: "Cheques que vencen en 7 días", hoja: "Cheques", n: vencen7 },
+    { texto: "Precio de la soja sin cargar", hoja: "Alquiler", n: precioSoja ? 0 : 1 },
+  ];
+
+  const r2 = (x) => Math.round(x * 100) / 100;
+  const roundDeep = (o) => (Array.isArray(o) ? o.map(roundDeep) : o && typeof o === "object" ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, roundDeep(v)])) : typeof o === "number" ? r2(o) : o);
+
+  const out = roundDeep({
+    version: 1,
+    archivo: fileName || "",
+    actualizado: new Date().toISOString(),
+    totales: {
+      facturado, gastosMaq, personal, generales, gastos: gastosMaq + personal + generales, ganancia,
+      nosDeben: sum(trabajos, (t) => t.saldo), iva: sum(trabajos, (t) => t.iva),
+      chequesCobrar: sum(cheques.filter((c) => c.tipo === "recibido" && (c.estado === "en cartera" || c.estado === "depositado")), (c) => c.monto),
+      chequesPagar: sum(cheques.filter((c) => c.tipo === "emitido" && c.estado === "pendiente"), (c) => c.monto),
+      trabajos: cargados.length, gastosCargados: gastos.length, cheques: cheques.length,
+    },
+    alquiler: { total: sojaTotal, cobrada: sojaCobrada, falta: sojaFalta, precioTn: precioSoja || null, faltaPesos: precioSoja ? (sojaFalta / 1000) * precioSoja : null },
+    avisos, porMaquina, porLabor, porGasto, porCliente, porMes, chequesMes,
+  });
+  out.porcentajes = { iva: P.iva, op: P.op, as: P.as, en: P.en };
+  return out;
+}
+if (typeof module !== "undefined") module.exports = { summarizeWorkbook };
+
+</script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const content = $("content"), msg = $("msg"), stamp = $("stamp"), fileInput = $("file"), uploadBtn = $("upload-btn");
+  const DOC = "resumen/actual";
+  const CACHE = "agro22-resumen";
+  const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  const nf = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 });
+  const usd = (v) => (v < 0 ? "−US$ " : "US$ ") + nf.format(Math.abs(Math.round(v || 0)));
+  const ars = (v) => (v < 0 ? "−$ " : "$ ") + nf.format(Math.abs(Math.round(v || 0)));
+  const kg = (v) => nf.format(Math.round(v || 0)) + " kg";
+  const pct = (v) => Math.round((v || 0) * 100) + "%";
+  const short = (v) => { const a = Math.abs(v); return a >= 1e6 ? (v / 1e6).toLocaleString("es-AR", { maximumFractionDigits: 1 }) + " M" : a >= 1e3 ? Math.round(v / 1e3) + " mil" : nf.format(Math.round(v)); };
+  const PAL = ["--c1", "--c2", "--c3", "--c4", "--c5", "--c6", "--c7", "--c8"];
+  const col = (i) => i < PAL.length ? `var(${PAL[i]})` : "var(--muted)";
+  const el = (tag, attrs, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") n.className = v; else if (k === "style") n.style.cssText = v; else n.setAttribute(k, v); }
+    for (const k of kids.flat()) if (k != null && k !== false) n.append(k.nodeType ? k : String(k));
+    return n;
+  };
+  const svgEl = (tag, attrs) => { const n = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v); return n; };
+
+  let current = null, year = null;
+  let db = null, canWrite = null;
+
+  function say(text, kind) { msg.hidden = !text; msg.className = "note " + (kind || "info"); msg.textContent = text || ""; }
+
+  // ---------- Pintado ----------
+  function card(title, how, wide) {
+    const c = el("section", { class: "card" + (wide ? " wide" : "") }, el("h2", null, title));
+    if (how) c.append(el("p", { class: "how" }, how));
+    return c;
+  }
+
+  function render(s) {
+    current = s;
+    content.replaceChildren();
+    if (!s) {
+      content.append(el("div", { class: "card" },
+        el("h2", null, "Todavía no hay números cargados"),
+        el("p", { class: "how" }, "Tocá “Actualizar con el Excel” y elegí la planilla de cuentas. La app lee el archivo y muestra todo en dibujos.")));
+      stamp.textContent = "Sin datos todavía";
+      return;
+    }
+    const t = s.totales, d = new Date(s.actualizado);
+    stamp.textContent = "Actualizado el " + d.toLocaleDateString("es-AR") + " a las " + d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+
+    // Ganancia y números grandes
+    const de100 = t.facturado ? Math.round(t.ganancia / t.facturado * 100) : null;
+    content.append(el("section", { class: "hero" },
+      el("div", { class: "label" }, "Ganancia: lo que queda después de pagar todo"),
+      el("div", { class: "big num" }, usd(t.ganancia)),
+      el("div", { class: "line" }, de100 == null ? "Todavía no hay trabajos con precio." : `De cada US$ 100 que facturamos, nos quedan US$ ${de100}.`)));
+    const tile = (label, value, hint) => el("div", { class: "tile" }, el("div", { class: "label" }, label), el("div", { class: "value num" }, value), el("div", { class: "hint" }, hint));
+    content.append(el("div", { class: "tiles" },
+      tile("Facturamos", usd(t.facturado), "por los trabajos, sin IVA"),
+      tile("Gastamos", usd(t.gastos), "máquinas, personal y generales"),
+      tile("Nos deben", usd(t.nosDeben), "los clientes, con IVA"),
+      tile("Soja por cobrar", kg(s.alquiler.falta), "del alquiler del campo")));
+
+    // Avisos
+    const pend = s.avisos.filter((a) => a.n > 0);
+    const av = card("¿Falta cargar algo?", pend.length ? "Esto conviene completarlo en el Excel para que los números estén completos." : null);
+    if (!pend.length) av.append(el("div", { class: "allgood" }, checkIcon(), "Todo cargado. No falta ningún dato."));
+    else av.append(el("div", { class: "alerts" }, pend.map((a) => el("div", { class: "alert" }, el("span", null, a.texto, " ", el("small", null, "· hoja " + a.hoja)), el("span", { class: "num" }, a.n)))));
+    content.append(av);
+
+    const g = el("div", { class: "grid2" });
+    content.append(g);
+
+    // 1. Mes a mes
+    const years = Object.keys(s.porMes || {}).sort();
+    if (!year || !years.includes(String(year))) year = years.length ? years[years.length - 1] : null;
+    const c1 = card("¿Ganamos o perdimos cada mes?", "Azul: lo que cobramos por los trabajos. Naranja: lo que gastamos. Si la azul es más alta, ese mes se ganó.", true);
+    if (years.length > 1) {
+      const yb = el("div", { class: "years", role: "group", "aria-label": "Año" });
+      for (const y of years) { const b = el("button", { type: "button", "aria-pressed": String(y === year) }, y); b.addEventListener("click", () => { year = y; render(current); }); yb.append(b); }
+      c1.append(yb);
+    }
+    c1.append(legend([["Lo que entró", "var(--in)"], ["Lo que salió", "var(--out)"]]));
+    if (year) { const m = s.porMes[year]; c1.append(pairBars(m.entro, m.salio, MESES, usd)); }
+    else c1.append(el("div", { class: "empty" }, "Cuando los trabajos y gastos tengan fecha, acá aparece cada mes."));
+    g.append(c1);
+
+    // 2. Trabajos
+    const c2 = card("¿Qué trabajo nos dejó más plata?", "Cada porción es un tipo de trabajo. La más grande es la que más aportó.");
+    c2.append(s.porLabor.length ? donut(s.porLabor, usd, "facturado") : el("div", { class: "empty" }, "Todavía no hay trabajos con precio."));
+    g.append(c2);
+
+    // 3. Gastos
+    const c3 = card("¿En qué se nos va la plata?", "Cada porción es un tipo de gasto, incluido lo que se paga al personal.");
+    c3.append(s.porGasto.length ? donut(s.porGasto, usd, "gastado") : el("div", { class: "empty" }, "Todavía no hay gastos cargados."));
+    g.append(c3);
+
+    // 4. Máquinas
+    const c4 = card("¿Qué máquina rinde más?", "Para cada máquina: lo que facturó y lo que gastó, con el personal incluido.");
+    const activas = s.porMaquina.filter((m) => m.entro || m.salio).sort((a, b) => b.ganancia - a.ganancia);
+    const quietas = s.porMaquina.filter((m) => !m.entro && !m.salio);
+    if (!activas.length) c4.append(el("div", { class: "empty" }, "Cuando los trabajos tengan la máquina cargada, acá se ve cuánto rinde cada una."));
+    else {
+      const max = Math.max(...activas.map((m) => Math.max(m.entro, m.salio)), 1);
+      c4.append(el("div", { class: "rows" }, activas.map((m) => {
+        const gana = m.ganancia >= 0;
+        const extra = [];
+        if (m.ha) extra.push(nf.format(m.ha) + " ha", usd(m.ganancia / m.ha) + " por ha");
+        if (m.litros && m.ha) extra.push(nf.format(Math.round(m.litros / m.ha * 10) / 10) + " litros de gasoil por ha");
+        return el("div", { class: "row" },
+          el("div", { class: "row-head" }, el("b", null, m.nombre), el("span", { class: "chip " + (gana ? "good" : "bad") }, (gana ? "Gana " : "Pierde ") + usd(Math.abs(m.ganancia)))),
+          hbar("Entró", m.entro, max, "var(--in)", usd),
+          hbar("Salió", m.salio, max, "var(--out)", usd),
+          extra.length ? el("div", { class: "foot num" }, extra.join(" · ")) : null);
+      })));
+      if (quietas.length) c4.append(el("div", { class: "rest" }, "Sin movimiento: " + quietas.map((m) => m.nombre).join(", ") + "."));
+    }
+    g.append(c4);
+
+    // 5. Clientes
+    const c5 = card("¿Quién nos contrató y cuánto nos debe?", "La barra muestra lo facturado a cada cliente (sin IVA). La etiqueta dice cuánto nos debe, con IVA.");
+    if (!s.porCliente.length) c5.append(el("div", { class: "empty" }, "Todavía no hay trabajos cargados."));
+    else {
+      const max = Math.max(...s.porCliente.map((c) => c.facturado), 1);
+      c5.append(el("div", { class: "rows" }, s.porCliente.map((c) => {
+        const chip = c.estado === "Debe" ? el("span", { class: "chip bad" }, "Debe " + usd(c.debe))
+          : c.estado === "Falta precio" ? el("span", { class: "chip warn" }, "Falta poner el precio")
+          : el("span", { class: "chip good" }, "Al día");
+        return el("div", { class: "row" },
+          el("div", { class: "row-head" }, el("b", null, c.nombre), chip),
+          hbar(nf.format(c.ha) + " ha", c.facturado, max, "var(--in)", usd));
+      })));
+    }
+    g.append(c5);
+
+    // 6. Alquiler
+    const a = s.alquiler;
+    const c6 = card("¿Cuánto del alquiler del campo ya cobramos?", "Soja pactada por el alquiler: " + kg(a.total) + ".");
+    const p = a.total ? Math.max(0, Math.min(1, a.cobrada / a.total)) : 0;
+    c6.append(el("div", { class: "progress", role: "img", "aria-label": "Cobrado " + pct(p) }, el("div", { class: "done", style: `width:${(p * 100).toFixed(1)}%` })));
+    c6.append(el("div", { class: "legend" }, el("span", { class: "key" }, el("span", { class: "sw", style: "background:var(--wheat)" }), "Ya cobrado: " + pct(p)), el("span", { class: "key" }, el("span", { class: "sw", style: "background:var(--brand-soft);border:1px solid var(--line)" }), "Falta cobrar")));
+    c6.append(el("div", { class: "split" },
+      el("div", null, el("span", { class: "label" }, "Ya cobramos"), el("span", { class: "value num" }, kg(a.cobrada))),
+      el("div", null, el("span", { class: "label" }, "Falta cobrar"), el("span", { class: "value num" }, kg(a.falta))),
+      el("div", null, el("span", { class: "label" }, "Falta cobrar, en pesos"), el("span", { class: "value num" }, a.faltaPesos == null ? "Falta el precio" : ars(a.faltaPesos))),
+      el("div", null, el("span", { class: "label" }, "Precio de la soja usado"), el("span", { class: "value num" }, a.precioTn ? ars(a.precioTn) + " / tn" : "Sin cargar"))));
+    g.append(c6);
+
+    // 7. Cheques
+    const cy = Object.keys(s.chequesMes || {}).sort();
+    const c7 = card("Cheques: ¿cuánta plata entra y sale cada mes?", "Montos en pesos, según la fecha de pago.");
+    c7.append(el("div", { class: "split" },
+      el("div", null, el("span", { class: "label" }, "Nos van a pagar"), el("span", { class: "value num" }, ars(t.chequesCobrar))),
+      el("div", null, el("span", { class: "label" }, "Tenemos que pagar"), el("span", { class: "value num" }, ars(t.chequesPagar)))));
+    if (!cy.length) c7.append(el("div", { class: "empty" }, "Todavía no hay cheques con fecha de pago cargados."));
+    else {
+      const y = cy.includes(String(year)) ? String(year) : cy[cy.length - 1];
+      c7.append(el("div", { class: "how" }, "Año " + y));
+      c7.append(legend([["A cobrar", "var(--in)"], ["A pagar", "var(--out)"]]));
+      c7.append(pairBars(s.chequesMes[y].cobrar, s.chequesMes[y].pagar, MESES, ars));
+    }
+    g.append(c7);
+  }
+
+  function checkIcon() {
+    const s = svgEl("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "2.6", "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true" });
+    s.append(svgEl("path", { d: "M4 12.5l5 5L20 6.5" }));
+    return s;
+  }
+  function legend(items) { return el("div", { class: "legend" }, items.map(([t, c]) => el("span", { class: "key" }, el("span", { class: "sw", style: "background:" + c }), t))); }
+  function hbar(label, value, max, color, fmt) {
+    const w = max ? Math.max(0, value) / max * 100 : 0;
+    return el("div", { class: "bar" }, el("span", null, label), el("div", { class: "track" }, el("div", { class: "fill", style: `width:${w.toFixed(1)}%;background:${color}` })), el("span", { class: "amt num" }, fmt(value)));
+  }
+
+  // Barras por mes (dos series lado a lado), dibujadas en SVG a escala
+  function pairBars(a, b, labels, fmt) {
+    const W = Math.round(Math.max(340, Math.min(940, (content.clientWidth || 640) - 40))), H = 230, top = 26, bottom = 28, left = 6, right = 6;
+    const max = Math.max(...a, ...b, 0);
+    const s = svgEl("svg", { class: "chart", viewBox: `0 0 ${W} ${H}`, role: "img" });
+    if (max <= 0) { const t = svgEl("text", { x: W / 2, y: H / 2, "text-anchor": "middle", "font-size": 16 }); t.textContent = "Sin movimientos con fecha en este año"; s.append(t); return s; }
+    const ih = H - top - bottom, slot = (W - left - right) / labels.length, bw = Math.min(18, slot * 0.34);
+    s.append(svgEl("line", { x1: left, x2: W - right, y1: top + ih, y2: top + ih, stroke: "var(--line)", "stroke-width": 1.5 }));
+    const parts = [];
+    labels.forEach((lab, i) => {
+      const cx = left + slot * i + slot / 2;
+      [[a[i], "var(--in)", -1], [b[i], "var(--out)", 1]].forEach(([v, c, side]) => {
+        if (!v) return;
+        const h = Math.max(2, v / max * ih), x = side < 0 ? cx - bw - 1 : cx + 1, y = top + ih - h;
+        const r = svgEl("rect", { x, y, width: bw, height: h, rx: 4, fill: c });
+        const tt = svgEl("title"); tt.textContent = `${lab}: ${fmt(v)}`; r.append(tt); s.append(r);
+        const tx = svgEl("text", { x: side < 0 ? x + bw : x, y: y - 6, "text-anchor": side < 0 ? "end" : "start", "font-size": 12, class: "val" }); tx.textContent = short(v); s.append(tx);
+      });
+      const t = svgEl("text", { x: cx, y: H - 8, "text-anchor": "middle", "font-size": 13 }); t.textContent = lab; s.append(t);
+    });
+    const months = a.map((v, i) => [labels[i], v, b[i]]).filter(([, x, y]) => x || y);
+    const wrap = el("div", null, s);
+    if (months.length) wrap.append(el("div", { class: "list", style: "margin-top:8px" }, months.map(([m, x, y]) =>
+      el("div", { class: "li" }, el("span", { class: "sw", style: `background:${x - y >= 0 ? "var(--good)" : "var(--bad)"}` }), el("span", null, m + ": entró " + fmt(x) + ", salió " + fmt(y)), el("span", { class: "amt num" }, (x - y >= 0 ? "ganó " : "perdió ") + fmt(Math.abs(x - y)))))));
+    return wrap;
+  }
+
+  // Torta (anillo) con la lista al lado
+  function donut(items, fmt, centerWord) {
+    const total = items.reduce((s, x) => s + x.valor, 0);
+    const R = 70, SW = 30, C = 2 * Math.PI * R;
+    const s = svgEl("svg", { class: "chart", viewBox: "0 0 200 200", role: "img", style: "max-width:200px" });
+    let off = 0;
+    items.forEach((it, i) => {
+      const len = it.valor / total * C;
+      const c = svgEl("circle", { cx: 100, cy: 100, r: R, fill: "none", stroke: col(i), "stroke-width": SW,
+        "stroke-dasharray": `${Math.max(0, len - 2)} ${C - Math.max(0, len - 2)}`, "stroke-dashoffset": String(-off), transform: "rotate(-90 100 100)" });
+      const tt = svgEl("title"); tt.textContent = `${it.nombre}: ${fmt(it.valor)}`; c.append(tt);
+      s.append(c); off += len;
+    });
+    const t1 = svgEl("text", { x: 100, y: 96, "text-anchor": "middle", "font-size": 18, class: "val" }); t1.textContent = short(total);
+    const t2 = svgEl("text", { x: 100, y: 116, "text-anchor": "middle", "font-size": 12 }); t2.textContent = "US$ " + centerWord;
+    s.append(t1, t2);
+    const list = el("div", { class: "list" }, items.map((it, i) => el("div", { class: "li" },
+      el("span", { class: "sw", style: "background:" + col(i) }),
+      el("span", null, it.nombre, el("span", { class: "pct" }, pct(it.valor / total))),
+      el("span", { class: "amt num" }, fmt(it.valor)))));
+    return el("div", { class: "donut-row" }, s, list);
+  }
+
+  // ---------- Cargar el Excel ----------
+  uploadBtn.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", async () => {
+    const f = fileInput.files && fileInput.files[0];
+    fileInput.value = "";
+    if (!f) return;
+    if (typeof XLSX === "undefined") { say("No se pudo cargar el lector de Excel. Revisá la conexión a internet y probá de nuevo.", "err"); return; }
+    say("Leyendo " + f.name + "…", "info");
+    let s;
+    try {
+      const wb = XLSX.read(new Uint8Array(await f.arrayBuffer()), { type: "array", cellDates: false });
+      if (!Object.keys(wb.Sheets).some((n) => n.toLowerCase() === "ingresos")) throw new Error("sin hoja Ingresos");
+      s = summarizeWorkbook(wb, XLSX, f.name);
+    } catch (e) {
+      say("No pude leer ese archivo. Fijate que sea la planilla de cuentas (.xlsx o .xls) con las hojas Ingresos, Gastos y Alquiler.", "err");
+      return;
+    }
+    render(s);
+    try { localStorage.setItem(CACHE, JSON.stringify(s)); } catch (e) {}
+    if (db && canWrite !== false) {
+      try { await db.doc(DOC).set(s); say("Listo. Los números quedaron guardados: cualquiera que abra la app ve esta versión.", "ok"); }
+      catch (e) { canWrite = false; say("Se ve en este aparato, pero no se pudo guardar para los demás (hace falta permiso de edición).", "err"); }
+    } else say("Listo. Se ve en este aparato.", "ok");
+  });
+
+  // ---------- Arranque ----------
+  try { const c = localStorage.getItem(CACHE); if (c) render(JSON.parse(c)); else render(null); } catch (e) { render(null); }
+
+  const start = async () => {
+    if (!window.claude || !window.claude.use) { uploadBtn.hidden = false; return; }
+    const [dbNs, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+    db = dbNs;
+    let edit = null;
+    try { edit = user ? await user.canEdit() : null; } catch (e) { edit = null; }
+    canWrite = edit;
+    uploadBtn.hidden = edit === false;
+    if (!db) { if (!current) render(null); return; }
+    db.doc(DOC).onSnapshot((snap) => {
+      if (snap.exists) { const d = snap.data(); render(d); try { localStorage.setItem(CACHE, JSON.stringify(d)); } catch (e) {} }
+      else if (!current) render(null);
+    }, () => {});
+  };
+  start();
+  let rt = null, lastW = window.innerWidth;
+  window.addEventListener("resize", () => { if (Math.abs(window.innerWidth - lastW) < 40) return; lastW = window.innerWidth; clearTimeout(rt); rt = setTimeout(() => current && render(current), 200); });
+})();
+</script>
+
+</body>
+</html>
